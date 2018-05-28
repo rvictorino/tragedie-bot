@@ -4,9 +4,7 @@ require 'mastodon'
 require 'json'
 require 'date'
 
-
-# constant
-FRENQUENCY = 8 * 3600 # 8 hours
+# the whole script is run by a scheduler on heroku
 
 # parse config file
 config = JSON.parse(File.read('config.json'))
@@ -20,12 +18,11 @@ client = Mastodon::REST::Client.new(base_url: config['instance_url'], bearer_tok
 # lyrics ♫
 lyrics = File.readlines(config['lyrics_file'])
 
-# endless loop ☠
-while true
-  random_lyrics = "♫ " + lyrics.sample.chomp + " ♫"
-  puts "#{DateTime.now.strftime("%d/%m/%Y %H:%M")}: 📯 #{random_lyrics}"
-  # toot a random sample from the lyrics
-  client.create_status(random_lyrics)
-	puts "#{DateTime.now.strftime("%d/%m/%Y %H:%M")}: 😴"
-  sleep(FRENQUENCY)
-end
+# get random lyrics to toot
+random_lyrics = "♫ " + lyrics.sample.chomp + " ♫"
+# log
+puts "#{DateTime.now.strftime("%d/%m/%Y %H:%M")}: 📯 #{random_lyrics}"
+# toot a random sample from the lyrics
+client.create_status(random_lyrics)
+# log end of task, terminate
+puts "#{DateTime.now.strftime("%d/%m/%Y %H:%M")}: 👍 😴"
